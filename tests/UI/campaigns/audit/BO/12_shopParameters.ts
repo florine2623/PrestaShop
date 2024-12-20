@@ -144,6 +144,7 @@ describe('BO - Shop Parameters', async () => {
     await testContext.addContextItem(this, 'testIdentifier', 'goToEditOrderStatusPage', baseContext);
 
     const tableName: string = 'order';
+    
     await boOrderSettingsPage.goToStatusesPage(page);
     await statusesPage.goToEditPage(page, tableName, 1);
 
