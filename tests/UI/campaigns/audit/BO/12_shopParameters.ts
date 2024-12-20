@@ -33,8 +33,6 @@ import {
   type BrowserContext,
   type Page,
   dataLanguages,
-  FakerOrderStatus,
-  FakerOrderReturnStatus,
   FakerSearchTag,
   utilsPlaywright,
 } from '@prestashop-core/ui-testing';
@@ -45,8 +43,6 @@ describe('BO - Shop Parameters', async () => {
   let browserContext: BrowserContext;
   let page: Page;
 
-  const createOrderStatusData: FakerOrderStatus = new FakerOrderStatus();
-  const createOrderReturnStatusData: FakerOrderReturnStatus = new FakerOrderReturnStatus();
   const createTagData: FakerSearchTag = new FakerSearchTag({language: dataLanguages.english.name});
 
   before(async function () {
@@ -154,7 +150,6 @@ describe('BO - Shop Parameters', async () => {
     const jsErrors = utilsPlaywright.getJsErrors();
     expect(jsErrors.length).to.equals(0);
   });
-  // FIN DES MODIFICATIONS
 
   it('should go to \'Statuses page > New Order return status\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToAddOrderReturnStatusPage', baseContext);
