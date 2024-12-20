@@ -44,7 +44,6 @@ const baseContext: string = 'audit_BO_dashboard';
 describe('BO - Shop Parameters', async () => {
   let browserContext: BrowserContext;
   let page: Page;
-  let numberOfTags: number = 0;
 
   const createOrderStatusData: FakerOrderStatus = new FakerOrderStatus();
   const createOrderReturnStatusData: FakerOrderReturnStatus = new FakerOrderReturnStatus();
