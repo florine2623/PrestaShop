@@ -90,7 +90,7 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-  it('should go to \'Maintenance\' tab', async function () {
+  it('should go to \'Maintenance\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToMaintenancePage', baseContext);
 
     await boShopParametersPage.goToSubTabMaintenance(page);
@@ -131,7 +131,7 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-  it('should go to add new order status page', async function () {
+  it('should go to \'Statuses page > New Order status\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToAddOrderStatusPage', baseContext);
 
     await boOrderSettingsPage.goToStatusesPage(page);
@@ -144,22 +144,19 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-  it('should go to edit order status page', async function () {
+  it('should go to \'Statuses > Edit Order status\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToEditOrderStatusPage', baseContext);
 
     const tableName: string = 'order';
     await boOrderSettingsPage.goToStatusesPage(page);
     await statusesPage.goToEditPage(page, tableName, 1);
 
-    // const pageTitle = await addOrderStatusPage.getPageTitle(page);
-    // expect(pageTitle).to.contains(addOrderStatusPage.pageTitleEdit(createOrderStatusData.name));
-
     const jsErrors = utilsPlaywright.getJsErrors();
     expect(jsErrors.length).to.equals(0);
   });
   // FIN DES MODIFICATIONS
 
-  it('should go to add new order return status page', async function () {
+  it('should go to \'Statuses page > New Order return status\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToAddOrderReturnStatusPage', baseContext);
 
     await boOrderSettingsPage.goToStatusesPage(page);
@@ -172,9 +169,8 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-
   //ERROR JS HERE
-  it('should go to edit order return status page', async function () {
+  it('should go to \'Statuses > Edit Order return status\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToEditOrderReturnStatusPage', baseContext);
 
     const tableName: string = 'order_return';
@@ -183,12 +179,10 @@ describe('BO - Shop Parameters', async () => {
     await statusesPage.goToEditPage(page, tableName, 1);
     
     const pageTitle = await addOrderReturnStatusPage.getPageTitle(page);
-    console.log(pageTitle);
     expect(pageTitle).to.contains(addOrderReturnStatusPage.pageTitleEdit('Waiting for confirmation'));
-    console.log(createOrderReturnStatusData.name);
     
-    // const jsErrors = utilsPlaywright.getJsErrors();
-    // expect(jsErrors.length).to.equals(0);
+    const jsErrors = utilsPlaywright.getJsErrors();
+    expect(jsErrors.length).to.equals(0);
   });
   //ERROR JS HERE
 
@@ -238,7 +232,7 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-  it('should go to add new group page', async function () {
+  it('should go to \'Groups > New Group\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToAddNewGroup', baseContext);
 
     await boCustomerGroupsPage.goToNewGroupPage(page);
@@ -250,7 +244,7 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-  it('should go to edit group page', async function () {
+  it('should go to \'Groups > Edit Group\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToEditGroupPage', baseContext);
 
     await boCustomerSettingsPage.goToGroupsPage(page);
@@ -275,7 +269,7 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-  it('should go to add new title page', async function () {
+  it('should go to \'Titles > New Title\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToAddNewTitle', baseContext);
 
     await titlesPage.goToAddNewTitle(page);
@@ -287,7 +281,7 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-  it('should go to edit title page', async function () {
+  it('sshould go to \'Titles > Edit Title\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToEditTitlePage', baseContext);
 
     await boCustomerSettingsPage.goToTitlesPage(page);
@@ -314,7 +308,7 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-  it('should go to add new contact page', async function () {
+  it('should go to \'Contacts > New Contact\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToAddNewContact', baseContext);
 
     await contactsPage.goToAddNewContactPage(page);
@@ -326,7 +320,7 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-  it('should go to edit contact page', async function () {
+  it('should go to \'Contacts > Edit Contact\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToEditContactPage', baseContext);
 
     await boDashboardPage.goToSubMenu(
@@ -356,7 +350,7 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-  it('should go to add new store page', async function () {
+  it('should go to \'Stores > New Store\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToAddNewStore', baseContext);
 
     await storesPage.goToNewStorePage(page);
@@ -368,7 +362,7 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-  it('should go to edit store page', async function () {
+  it('should go to \'Stores > Edit Store\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToEditStorePage', baseContext);
 
     await contactsPage.goToStoresPage(page);
@@ -398,7 +392,7 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-  it('should go to new seo page page', async function () {
+  it('should go to \'Traffic & SEO > New page\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToNewSeoPage', baseContext);
 
     await seoAndUrlsPage.goToNewSeoUrlPage(page);
@@ -410,7 +404,7 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-  it('should go to edit first seo page page', async function () {
+  it('should go to \'Traffic & SEO > Edit page\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToEditSeoPage', baseContext);
 
     await boDashboardPage.goToSubMenu(
@@ -441,7 +435,7 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-  it('should go to new search engine', async function () {
+  it('should go to \'Search Engines > New Search engine\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToNewSearchEnginePage', baseContext);
 
     await searchEnginesPage.goToNewSearchEnginePage(page);
@@ -453,7 +447,7 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-  it('should go to edit first search engine page', async function () {
+  it('should go to \'Search Engines > Edit Search engine\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToEditSearchEngine', baseContext);
 
     await seoAndUrlsPage.goToSearchEnginesPage(page);
@@ -482,7 +476,7 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-  it('should go to add new search page', async function () {
+  it('should go to \'Search > New alias\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToAddAliasPage', baseContext);
 
     await boSearchPage.goToAddNewAliasPage(page);
@@ -494,7 +488,7 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-  it('should go to edit alias page', async function () {
+  it('should go to \'Search > Edit alias\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToEditAliasPage', baseContext);
 
     await boDashboardPage.goToSubMenu(
@@ -523,7 +517,7 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-  it('should go to add new tag page', async function () {
+  it('should go to \'Tags > New Tag\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToAddTagPage', baseContext);
 
     await tagsPage.goToAddNewTagPage(page);
@@ -542,7 +536,7 @@ describe('BO - Shop Parameters', async () => {
     expect(textResult).to.contains(tagsPage.successfulCreationMessage);
   });
 
-  it('should go to edit tag page', async function () {
+  it('should go to \'Tags > Edit Tag\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToEditTagPage', baseContext);
 
     await boSearchPage.goToTagsPage(page);
