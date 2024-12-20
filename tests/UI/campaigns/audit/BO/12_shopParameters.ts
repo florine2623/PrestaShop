@@ -37,7 +37,7 @@ import {
   utilsPlaywright,
 } from '@prestashop-core/ui-testing';
 
-const baseContext: string = 'audit_BO_dashboard';
+const baseContext: string = 'audit_BO_shopParameters';
 
 describe('BO - Shop Parameters', async () => {
   let browserContext: BrowserContext;
@@ -144,7 +144,7 @@ describe('BO - Shop Parameters', async () => {
     await testContext.addContextItem(this, 'testIdentifier', 'goToEditOrderStatusPage', baseContext);
 
     const tableName: string = 'order';
-    
+
     await boOrderSettingsPage.goToStatusesPage(page);
     await statusesPage.goToEditPage(page, tableName, 1);
 
