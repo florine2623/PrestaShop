@@ -33,6 +33,8 @@ import {
   type BrowserContext,
   type Page,
   dataLanguages,
+  FakerOrderStatus,
+  FakerOrderReturnStatus,
   FakerSearchTag,
   utilsPlaywright,
 } from '@prestashop-core/ui-testing';
@@ -44,7 +46,8 @@ describe('BO - Shop Parameters', async () => {
   let page: Page;
   let numberOfTags: number = 0;
 
-  const tableName: string = 'status';
+  const createOrderStatusData: FakerOrderStatus = new FakerOrderStatus();
+  const createOrderReturnStatusData: FakerOrderReturnStatus = new FakerOrderReturnStatus();
   const createTagData: FakerSearchTag = new FakerSearchTag({language: dataLanguages.english.name});
 
   before(async function () {
@@ -142,16 +145,19 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-  //EDIT A MODIFIER
-  // it('should go to edit order status page', async function () {
-  //   await testContext.addContextItem(this, 'testIdentifier', 'goToEditOrderStatusPage', baseContext);
+  it('should go to edit order status page', async function () {
+    await testContext.addContextItem(this, 'testIdentifier', 'goToEditOrderStatusPage', baseContext);
 
-  //   await boOrderSettingsPage.goToStatusesPage(page);
-  //   await statusesPage.goToEditPage(page, tableName, 1);
+    const tableName: string = 'order';
+    await boOrderSettingsPage.goToStatusesPage(page);
+    await statusesPage.goToEditPage(page, tableName, 1);
 
-  //   const jsErrors = utilsPlaywright.getJsErrors();
-  //   expect(jsErrors.length).to.equals(0);
-  // });
+    // const pageTitle = await addOrderStatusPage.getPageTitle(page);
+    // expect(pageTitle).to.contains(addOrderStatusPage.pageTitleEdit(createOrderStatusData.name));
+
+    const jsErrors = utilsPlaywright.getJsErrors();
+    expect(jsErrors.length).to.equals(0);
+  });
   // FIN DES MODIFICATIONS
 
   it('should go to add new order return status page', async function () {
@@ -167,17 +173,25 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-  //A VOIR APRES AVEC ORDER STATUS ET RETURN ORDER STATUS
-  // it('should go to edit order return status page', async function () {
-  //   await testContext.addContextItem(this, 'testIdentifier', 'goToEditOrderReturnStatusPage', baseContext);
 
-  //   await statusesPage.goToNewOrderStatusPage(page);
-  //   await statusesPage.goToEditPage(page, tableName, 1);
+  //ERROR JS HERE
+  it('should go to edit order return status page', async function () {
+    await testContext.addContextItem(this, 'testIdentifier', 'goToEditOrderReturnStatusPage', baseContext);
 
-  //   const pageTitle = await addOrderReturnStatusPage.getPageTitle(page);
-  //   expect(pageTitle).to.contains(addOrderReturnStatusPage.pageTitleEdit(pageTitle));
-  // });
-  //FIN DE CE QUIL FAUT VOIR
+    const tableName: string = 'order_return';
+
+    await boOrderSettingsPage.goToStatusesPage(page);
+    await statusesPage.goToEditPage(page, tableName, 1);
+    
+    const pageTitle = await addOrderReturnStatusPage.getPageTitle(page);
+    console.log(pageTitle);
+    expect(pageTitle).to.contains(addOrderReturnStatusPage.pageTitleEdit('Waiting for confirmation'));
+    console.log(createOrderReturnStatusData.name);
+    
+    // const jsErrors = utilsPlaywright.getJsErrors();
+    // expect(jsErrors.length).to.equals(0);
+  });
+  //ERROR JS HERE
 
   it('should go to \'Shop parameters > Product Settings\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToProductSettingPage', baseContext);
