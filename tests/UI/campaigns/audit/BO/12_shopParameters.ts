@@ -164,7 +164,6 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-  //ERROR JS HERE
   it('should go to \'Statuses > Edit Order return status\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToEditOrderReturnStatusPage', baseContext);
 
@@ -172,14 +171,13 @@ describe('BO - Shop Parameters', async () => {
 
     await boOrderSettingsPage.goToStatusesPage(page);
     await statusesPage.goToEditPage(page, tableName, 1);
-    
+
     const pageTitle = await addOrderReturnStatusPage.getPageTitle(page);
     expect(pageTitle).to.contains(addOrderReturnStatusPage.pageTitleEdit('Waiting for confirmation'));
-    
+
     const jsErrors = utilsPlaywright.getJsErrors();
     expect(jsErrors.length).to.equals(0);
   });
-  //ERROR JS HERE
 
   it('should go to \'Shop parameters > Product Settings\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToProductSettingPage', baseContext);
