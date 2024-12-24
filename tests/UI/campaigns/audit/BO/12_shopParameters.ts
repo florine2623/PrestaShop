@@ -175,6 +175,7 @@ describe('BO - Shop Parameters', async () => {
 
     const pageTitle = await addOrderReturnStatusPage.getPageTitle(page);
     expect(pageTitle).to.contains(addOrderReturnStatusPage.pageTitleEdit('Waiting for confirmation'));
+    //expect(page.url()).to.contains('edit');
 
     const jsErrors = utilsPlaywright.getJsErrors();
     expect(jsErrors.length).to.equals(0);
@@ -471,7 +472,7 @@ describe('BO - Shop Parameters', async () => {
   });
 
   it('should go to \'Search > New alias\' page', async function () {
-    await testContext.addContextItem(this, 'testIdentifier', 'goToAddAliasPage', baseContext);
+    await testContext.addContextItem(this, 'testIdentifier', 'goToAddNewAliasPage', baseContext);
 
     await boSearchPage.goToAddNewAliasPage(page);
 
@@ -483,7 +484,7 @@ describe('BO - Shop Parameters', async () => {
   });
 
   it('should go to \'Search > Edit alias\' page', async function () {
-    await testContext.addContextItem(this, 'testIdentifier', 'goToEditAliasPage', baseContext);
+    await testContext.addContextItem(this, 'testIdentifier', 'gotoEditAliasPage', baseContext);
 
     await boDashboardPage.goToSubMenu(
       page,
