@@ -29,6 +29,7 @@ import {
   boCustomerGroupsPage,
   boCustomerGroupsCreatePage,
   boSearchPage,
+  boSearchAliasPage,
   boSearchAliasCreatePage,
   type BrowserContext,
   type Page,
@@ -447,7 +448,7 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
-  it('should go to \'Shop Parameters > Search > Aliases\' page', async function () {
+  it('should go to \'Shop Parameters > Search\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToSearchPage', baseContext);
 
     await boDashboardPage.goToSubMenu(
@@ -463,6 +464,15 @@ describe('BO - Shop Parameters', async () => {
     expect(jsErrors.length).to.equals(0);
   });
 
+  it('should go to \'Shop Parameters > Search > Aliases\' tab', async function () {
+    await testContext.addContextItem(this, 'testIdentifier', 'goToAliasesTab', baseContext);
+
+    await boSearchPage.goToAliasesPage(page);
+
+    const pageTitle = await boSearchAliasPage.getPageTitle(page);
+    expect(pageTitle).to.equals(boSearchAliasPage.pageTitle);
+  });
+
   it('should go to \'Shop Parameters > Search > Aliases > New alias\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToAddNewAliasPage', baseContext);
 
@@ -476,14 +486,9 @@ describe('BO - Shop Parameters', async () => {
   });
 
   it('should go to \'Shop Parameters > Search > Aliases > Edit alias\' page', async function () {
-    await testContext.addContextItem(this, 'testIdentifier', 'gotoEditAliasPage', baseContext);
+    await testContext.addContextItem(this, 'testIdentifier', 'goToEditAliasPage', baseContext);
 
-    await boDashboardPage.goToSubMenu(
-      page,
-      boDashboardPage.shopParametersParentLink,
-      boDashboardPage.searchLink,
-    );
-    await boSearchPage.gotoEditAliasPage(page, 1);
+    await boSearchAliasPage.gotoEditAliasPage(page, 1);
 
     const pageTitle = await boSearchAliasCreatePage.getPageTitle(page);
     expect(pageTitle).to.contains(boSearchAliasCreatePage.pageTitleEdit);
