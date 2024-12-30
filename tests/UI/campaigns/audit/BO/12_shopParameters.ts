@@ -476,7 +476,7 @@ describe('BO - Shop Parameters', async () => {
   it('should go to \'Shop Parameters > Search > Aliases > New alias\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToAddNewAliasPage', baseContext);
 
-    await boSearchPage.goToAddNewAliasPage(page);
+    await boSearchAliasPage.goToAddNewAliasPage(page);
 
     const pageTitle = await boSearchAliasCreatePage.getPageTitle(page);
     expect(pageTitle).to.contains(boSearchAliasCreatePage.pageTitleCreate);
@@ -488,6 +488,7 @@ describe('BO - Shop Parameters', async () => {
   it('should go to \'Shop Parameters > Search > Aliases > Edit alias\' page', async function () {
     await testContext.addContextItem(this, 'testIdentifier', 'goToEditAliasPage', baseContext);
 
+    await boSearchPage.goToAliasesPage(page);
     await boSearchAliasPage.gotoEditAliasPage(page, 1);
 
     const pageTitle = await boSearchAliasCreatePage.getPageTitle(page);
