@@ -121,7 +121,7 @@ class LanguageController extends PrestaShopAdminController
                 return $this->redirectToRoute('admin_languages_index');
             }
         } catch (Exception $e) {
-            $this->addFlash('error', $this->getErrorMessageForException($e, $this->getErrorMessages($e)));
+            $this->addFlash('error', $this->getErrorMessageForException($e, $this->getErrorMessages()));
         }
 
         return $this->render('@PrestaShop/Admin/Improve/International/Language/create.html.twig', [
@@ -156,7 +156,7 @@ class LanguageController extends PrestaShopAdminController
         } catch (Exception $exception) {
             $this->addFlash(
                 'error',
-                $this->getErrorMessageForException($exception, $this->getErrorMessages($exception))
+                $this->getErrorMessageForException($exception, $this->getErrorMessages())
             );
 
             return $this->redirectToRoute('admin_languages_index');
@@ -175,25 +175,21 @@ class LanguageController extends PrestaShopAdminController
                 return $this->redirectToRoute('admin_languages_index');
             }
         } catch (Exception $e) {
-            $this->addFlash('error', $this->getErrorMessageForException($e, $this->getErrorMessages($e)));
+            $this->addFlash('error', $this->getErrorMessageForException($e, $this->getErrorMessages()));
 
             if ($e instanceof LanguageNotFoundException) {
                 return $this->redirectToRoute('admin_languages_index');
             }
         }
 
-        /** @var EditableLanguage $editableLanguage */
-        $editableLanguage = $this->dispatchQuery(new GetLanguageForEditing((int) $languageId));
-
         return $this->render('@PrestaShop/Admin/Improve/International/Language/edit.html.twig', [
             'languageForm' => $languageForm->createView(),
-            'editableLanguage' => $editableLanguage,
             'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
             'enableSidebar' => true,
             'layoutTitle' => $this->trans(
                 'Editing language %name%',
                 [
-                    '%name%' => $editableLanguage->getName(),
+                    '%name%' => $languageForm->get('name')->getData(),
                 ],
                 'Admin.Navigation.Menu'
             ),
@@ -216,7 +212,7 @@ class LanguageController extends PrestaShopAdminController
 
             $this->addFlash('success', $this->trans('Successful deletion', [], 'Admin.Notifications.Success'));
         } catch (LanguageException $e) {
-            $this->addFlash('error', $this->getErrorMessageForException($e, $this->getErrorMessages($e)));
+            $this->addFlash('error', $this->getErrorMessageForException($e, $this->getErrorMessages()));
         }
 
         return $this->redirectToRoute('admin_languages_index');
@@ -243,7 +239,7 @@ class LanguageController extends PrestaShopAdminController
                 $this->trans('The selection has been successfully deleted.', [], 'Admin.Notifications.Success')
             );
         } catch (LanguageException $e) {
-            $this->addFlash('error', $this->getErrorMessageForException($e, $this->getErrorMessages($e)));
+            $this->addFlash('error', $this->getErrorMessageForException($e, $this->getErrorMessages()));
         }
 
         return $this->redirectToRoute('admin_languages_index');
@@ -274,7 +270,7 @@ class LanguageController extends PrestaShopAdminController
                 $this->trans('The status has been successfully updated.', [], 'Admin.Notifications.Success')
             );
         } catch (LanguageException $e) {
-            $this->addFlash('error', $this->getErrorMessageForException($e, $this->getErrorMessages($e)));
+            $this->addFlash('error', $this->getErrorMessageForException($e, $this->getErrorMessages()));
         }
 
         return $this->redirectToRoute('admin_languages_index');
@@ -306,18 +302,16 @@ class LanguageController extends PrestaShopAdminController
                 $this->trans('The status has been successfully updated.', [], 'Admin.Notifications.Success')
             );
         } catch (LanguageException $e) {
-            $this->addFlash('error', $this->getErrorMessageForException($e, $this->getErrorMessages($e)));
+            $this->addFlash('error', $this->getErrorMessageForException($e, $this->getErrorMessages()));
         }
 
         return $this->redirectToRoute('admin_languages_index');
     }
 
     /**
-     * @param Exception $e
-     *
      * @return array
      */
-    private function getErrorMessages(Exception $e)
+    private function getErrorMessages()
     {
         $iniConfig = $this->container->get(IniConfiguration::class);
 

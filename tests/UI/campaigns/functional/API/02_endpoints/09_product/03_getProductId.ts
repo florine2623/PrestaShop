@@ -4,34 +4,45 @@ import testContext from '@utils/testContext';
 // Import commonTests
 import {deleteAPIClientTest} from '@commonTests/BO/advancedParameters/authServer';
 
+// Import pages
+import createProductsPage from '@pages/BO/catalog/products/add';
+
 import {expect} from 'chai';
 import {
   type APIRequestContext,
   boApiClientsPage,
   boApiClientsCreatePage,
   boDashboardPage,
-  boDesignPositionsPage,
   boLoginPage,
+  boProductsPage,
+  boProductsCreateTabDescriptionPage,
   type BrowserContext,
+  dataLanguages,
+  dataProducts,
   FakerAPIClient,
   type Page,
   utilsAPI,
   utilsPlaywright,
 } from '@prestashop-core/ui-testing';
 
-const baseContext: string = 'functional_API_endpoints_hookStatus_getHookStatusId';
+const baseContext: string = 'functional_API_endpoints_product_getProductId';
 
-describe('API : GET /hook-status/{id}', async () => {
+describe('API : GET /product/{productId}', async () => {
   let apiContext: APIRequestContext;
   let browserContext: BrowserContext;
   let page: Page;
+  let clientSecret: string;
   let accessToken: string;
   let jsonResponse: any;
-  let idHook: number;
-  let statusHook: boolean;
-  let clientSecret: string;
+  let idProduct: number;
+  let productType: string;
+  let productActive: boolean;
+  let productNameEn: string;
+  let productNameFr: string;
+  let productDescriptionEn: string;
+  let productDescriptionFr: string;
 
-  const clientScope: string = 'hook_read';
+  const clientScope: string = 'product_read';
   const clientData: FakerAPIClient = new FakerAPIClient({
     enabled: true,
     scopes: [
@@ -133,36 +144,77 @@ describe('API : GET /hook-status/{id}', async () => {
   });
 
   describe('BackOffice : Expected data', async () => {
-    it('should go to \'Design > Positions\' page', async function () {
-      await testContext.addContextItem(this, 'testIdentifier', 'goToPositionsPage', baseContext);
+    it('should go to \'Catalog > Products\' page', async function () {
+      await testContext.addContextItem(this, 'testIdentifier', 'goToProductsPage', baseContext);
 
-      await boDashboardPage.goToSubMenu(
-        page,
-        boDashboardPage.designParentLink,
-        boDashboardPage.positionsLink,
-      );
-      await boDesignPositionsPage.closeSfToolBar(page);
+      await boDashboardPage.goToSubMenu(page, boDashboardPage.catalogParentLink, boDashboardPage.productsLink);
+      await boProductsPage.closeSfToolBar(page);
 
-      const pageTitle = await boDesignPositionsPage.getPageTitle(page);
-      expect(pageTitle).to.contains(boDesignPositionsPage.pageTitle);
+      const pageTitle = await boProductsPage.getPageTitle(page);
+      expect(pageTitle).to.contains(boProductsPage.pageTitle);
     });
 
-    it('should get the hook informations', async function () {
-      await testContext.addContextItem(this, 'testIdentifier', 'getHookInformations', baseContext);
+    it('should filter list by name', async function () {
+      await testContext.addContextItem(this, 'testIdentifier', 'filterForCreation', baseContext);
 
-      idHook = await boDesignPositionsPage.getHookId(page, 0);
-      expect(idHook).to.be.gt(0);
+      await boProductsPage.resetFilter(page);
+      await boProductsPage.filterProducts(page, 'product_name', dataProducts.demo_1.name);
 
-      statusHook = await boDesignPositionsPage.getHookStatus(page, 0);
-      expect(statusHook).to.be.equal(true);
+      const numProducts = await boProductsPage.getNumberOfProductsFromList(page);
+      expect(numProducts).to.be.equal(1);
+
+      const productName = await boProductsPage.getTextColumn(page, 'product_name', 1);
+      expect(productName).to.contains(dataProducts.demo_1.name);
+
+      idProduct = parseInt((await boProductsPage.getTextColumn(page, 'id_product', 1)).toString(), 10);
+      expect(idProduct).to.be.gt(0);
+    });
+
+    it('should go to edit product page', async function () {
+      await testContext.addContextItem(this, 'testIdentifier', 'goToEditProductPageAfterPost', baseContext);
+
+      await boProductsPage.goToProductPage(page, 1);
+
+      const pageTitle: string = await createProductsPage.getPageTitle(page);
+      expect(pageTitle).to.contains(createProductsPage.pageTitle);
+    });
+
+    it('should fetch informations', async function () {
+      await testContext.addContextItem(this, 'testIdentifier', 'fetchInformations', baseContext);
+
+      productType = await createProductsPage.getProductType(page);
+      expect(productType).to.be.a('string');
+
+      productActive = await createProductsPage.getProductStatus(page);
+      expect(productActive).to.be.a('boolean');
+
+      productNameEn = await createProductsPage.getProductName(page, dataLanguages.english.isoCode);
+      expect(productNameEn).to.be.a('string');
+
+      productNameFr = await createProductsPage.getProductName(page, dataLanguages.french.isoCode);
+      expect(productNameFr).to.be.a('string');
+
+      productDescriptionEn = await boProductsCreateTabDescriptionPage.getValue(
+        page,
+        'description',
+        dataLanguages.english.id.toString(),
+      );
+      expect(productDescriptionEn).to.be.a('string');
+
+      productDescriptionFr = await boProductsCreateTabDescriptionPage.getValue(
+        page,
+        'description',
+        dataLanguages.french.id.toString(),
+      );
+      expect(productDescriptionFr).to.be.a('string');
     });
   });
 
   describe('API : Check Data', async () => {
-    it('should request the endpoint /hook-status/{id}', async function () {
+    it('should request the endpoint /product/{productId}', async function () {
       await testContext.addContextItem(this, 'testIdentifier', 'requestEndpoint', baseContext);
 
-      const apiResponse = await apiContext.get(`hook-status/${idHook}`, {
+      const apiResponse = await apiContext.get(`product/${idProduct}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -176,19 +228,29 @@ describe('API : GET /hook-status/{id}', async () => {
 
     it('should check the JSON Response keys', async function () {
       await testContext.addContextItem(this, 'testIdentifier', 'checkResponseKeys', baseContext);
-
       expect(jsonResponse).to.have.all.keys(
-        'id',
+        'productId',
+        'type',
         'active',
+        'names',
+        'descriptions',
       );
     });
 
-    it('should check the JSON Response : `id`', async function () {
-      await testContext.addContextItem(this, 'testIdentifier', 'checkResponseId', baseContext);
+    it('should check the JSON Response : `productId`', async function () {
+      await testContext.addContextItem(this, 'testIdentifier', 'checkResponseProductId', baseContext);
 
-      expect(jsonResponse).to.have.property('id');
-      expect(jsonResponse.id).to.be.a('number');
-      expect(jsonResponse.id).to.be.equal(idHook);
+      expect(jsonResponse).to.have.property('productId');
+      expect(jsonResponse.productId).to.be.a('number');
+      expect(jsonResponse.productId).to.be.equal(idProduct);
+    });
+
+    it('should check the JSON Response : `type`', async function () {
+      await testContext.addContextItem(this, 'testIdentifier', 'checkResponseType', baseContext);
+
+      expect(jsonResponse).to.have.property('type');
+      expect(jsonResponse.type).to.be.a('string');
+      expect(jsonResponse.type).to.be.equal(productType);
     });
 
     it('should check the JSON Response : `active`', async function () {
@@ -196,7 +258,25 @@ describe('API : GET /hook-status/{id}', async () => {
 
       expect(jsonResponse).to.have.property('active');
       expect(jsonResponse.active).to.be.a('boolean');
-      expect(jsonResponse.active).to.be.equal(statusHook);
+      expect(jsonResponse.active).to.be.equal(productActive);
+    });
+
+    it('should check the JSON Response : `names`', async function () {
+      await testContext.addContextItem(this, 'testIdentifier', 'checkResponseNames', baseContext);
+
+      expect(jsonResponse).to.have.property('names');
+      expect(jsonResponse.names).to.be.a('object');
+      expect(jsonResponse.names[dataLanguages.english.locale]).to.be.equal(productNameEn);
+      expect(jsonResponse.names[dataLanguages.french.locale]).to.be.equal(productNameFr);
+    });
+
+    it('should check the JSON Response : `descriptions`', async function () {
+      await testContext.addContextItem(this, 'testIdentifier', 'checkResponseDescriptions', baseContext);
+
+      expect(jsonResponse).to.have.property('descriptions');
+      expect(jsonResponse.descriptions).to.be.a('object');
+      expect(jsonResponse.descriptions[dataLanguages.english.locale]).to.be.equal(productDescriptionEn);
+      expect(jsonResponse.descriptions[dataLanguages.french.locale]).to.be.equal(productDescriptionFr);
     });
   });
 

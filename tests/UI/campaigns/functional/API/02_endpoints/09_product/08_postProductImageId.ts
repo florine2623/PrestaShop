@@ -29,9 +29,9 @@ import {
   utilsPlaywright,
 } from '@prestashop-core/ui-testing';
 
-const baseContext: string = 'functional_API_endpoints_product_postProductIdImage';
+const baseContext: string = 'functional_API_endpoints_product_postProductImageId';
 
-describe('API : POST /product/{productId}/image', async () => {
+describe('API : POST /product/image/{imageId}', async () => {
   let apiContext: APIRequestContext;
   let browserContext: BrowserContext;
   let page: Page;
@@ -48,9 +48,18 @@ describe('API : POST /product/{productId}/image', async () => {
       clientScope,
     ],
   });
-  const createProduct: FakerProduct = new FakerProduct({});
+  const productImageCreated: string = 'coverCreated.jpg';
+  const productImageUpdated: string = 'coverUpdated.jpg';
+  const productCaptionEN: string = 'Caption EN';
+  const productCaptionFR: string = 'Caption FR';
+  const productCaptionUpdatedEN: string = `${productCaptionEN} UPDATED`;
+  const productCaptionUpdatedFR: string = `${productCaptionEN} MIS A JOUR`;
+  const createProduct: FakerProduct = new FakerProduct({
+    type: 'standard',
+    status: true,
+  });
 
-  createProductTest(createProduct, `${baseContext}_preTest`);
+  createProductTest(createProduct, `${baseContext}_preTest_0`);
 
   describe('POST /product/{productId}/image', async () => {
     before(async function () {
@@ -59,13 +68,15 @@ describe('API : POST /product/{productId}/image', async () => {
 
       apiContext = await utilsPlaywright.createAPIContext(global.API.URL);
 
-      await utilsFile.generateImage(`${createProduct.name}.jpg`);
+      await utilsFile.generateImage(productImageCreated);
+      await utilsFile.generateImage(productImageUpdated);
     });
 
     after(async () => {
       await utilsPlaywright.closeBrowserContext(browserContext);
 
-      await utilsFile.deleteFile(`${createProduct.name}.jpg`);
+      await utilsFile.deleteFile(productImageCreated);
+      await utilsFile.deleteFile(productImageUpdated);
     });
 
     describe('BackOffice : Fetch the access token', async () => {
@@ -176,27 +187,71 @@ describe('API : POST /product/{productId}/image', async () => {
         idProduct = parseInt((await boProductsPage.getTextColumn(page, 'id_product', 1)).toString(), 10);
         expect(idProduct).to.be.gt(0);
       });
+
+      it('should go to edit product page', async function () {
+        await testContext.addContextItem(this, 'testIdentifier', 'goToEditProductPage', baseContext);
+
+        await boProductsPage.goToProductPage(page, 1);
+
+        const pageTitle: string = await createProductsPage.getPageTitle(page);
+        expect(pageTitle).to.contains(createProductsPage.pageTitle);
+
+        const numImages = await boProductsCreateTabDescriptionPage.getNumberOfImages(page);
+        expect(numImages).to.be.equals(0);
+      });
+
+      it('should add image', async function () {
+        await testContext.addContextItem(this, 'testIdentifier', 'addImage', baseContext);
+
+        await boProductsCreateTabDescriptionPage.addProductImages(page, [productImageCreated]);
+
+        const numOfImages = await boProductsCreateTabDescriptionPage.getNumberOfImages(page);
+        expect(numOfImages).to.eq(1);
+      });
+
+      it('should set image information', async function () {
+        await testContext.addContextItem(this, 'testIdentifier', 'setImageInformation', baseContext);
+
+        const message = await boProductsCreateTabDescriptionPage.setProductImageInformation(
+          page,
+          1,
+          true,
+          productCaptionEN,
+          productCaptionFR,
+          false,
+          true,
+          true,
+        );
+        expect(message).to.be.eq(boProductsCreateTabDescriptionPage.settingUpdatedMessage);
+
+        productImageInformation = await boProductsCreateTabDescriptionPage.getProductImageInformation(page, 1);
+      });
     });
 
-    describe('API : Create the Product Image', async () => {
-      it('should request the endpoint /product/{productId}/image', async function () {
+    describe('API : Update the Product Image', async () => {
+      it('should request the endpoint /product/image/{imageId}', async function () {
         await testContext.addContextItem(this, 'testIdentifier', 'requestEndpoint', baseContext);
 
-        const apiResponse = await apiContext.post(`product/${idProduct}/image`, {
+        const dataMultipart: any = {};
+        dataMultipart[`legends[${dataLanguages.english.locale}]`] = productCaptionUpdatedEN;
+        dataMultipart[`legends[${dataLanguages.french.locale}]`] = productCaptionUpdatedFR;
+
+        const apiResponse = await apiContext.post(`product/image/${productImageInformation.id}`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
             ContentType: 'multipart/form-data',
           },
           multipart: {
+            ...dataMultipart,
             image: {
-              name: `${createProduct.name}.jpg`,
+              name: productImageUpdated,
               mimeType: 'image/jpg',
-              buffer: fs.readFileSync(`${createProduct.name}.jpg`),
+              buffer: fs.readFileSync(productImageUpdated),
             },
           },
         });
 
-        expect(apiResponse.status()).to.eq(201);
+        expect(apiResponse.status()).to.eq(200);
         expect(utilsAPI.hasResponseHeader(apiResponse, 'Content-Type')).to.eq(true);
         expect(utilsAPI.getResponseHeader(apiResponse, 'Content-Type')).to.contains('application/json');
 
@@ -213,6 +268,7 @@ describe('API : POST /product/{productId}/image', async () => {
           'legends',
           'cover',
           'position',
+          'shopIds',
         );
       });
 
@@ -225,30 +281,26 @@ describe('API : POST /product/{productId}/image', async () => {
 
         expect(jsonResponse.thumbnailUrl).to.be.a('string');
 
-        expect(jsonResponse.legends[dataLanguages.english.id]).to.be.a('string');
-        expect(jsonResponse.legends[dataLanguages.english.id]).to.equals('');
-        expect(jsonResponse.legends[dataLanguages.french.id]).to.be.a('string');
-        expect(jsonResponse.legends[dataLanguages.french.id]).to.equals('');
+        expect(jsonResponse.legends[dataLanguages.english.locale]).to.be.a('string');
+        expect(jsonResponse.legends[dataLanguages.english.locale]).to.equals(productCaptionUpdatedEN);
+        expect(jsonResponse.legends[dataLanguages.french.locale]).to.be.a('string');
+        expect(jsonResponse.legends[dataLanguages.french.locale]).to.equals(productCaptionUpdatedFR);
 
         expect(jsonResponse.cover).to.be.a('boolean');
         expect(jsonResponse.cover).to.be.equals(true);
 
         expect(jsonResponse.position).to.be.a('number');
         expect(jsonResponse.position).to.be.equals(1);
+
+        expect(jsonResponse.shopIds).to.be.a('array');
       });
     });
 
-    describe('BackOffice : Check the Product Image is created', async () => {
-      it('should go to edit product page', async function () {
-        await testContext.addContextItem(this, 'testIdentifier', 'goToEditProductPage', baseContext);
+    describe('BackOffice : Check the Product Image is updated', async () => {
+      it('should reload the page', async function () {
+        await testContext.addContextItem(this, 'testIdentifier', 'reloadPage', baseContext);
 
-        await boProductsPage.goToProductPage(page, 1);
-
-        const pageTitle: string = await createProductsPage.getPageTitle(page);
-        expect(pageTitle).to.contains(createProductsPage.pageTitle);
-
-        const numImages = await boProductsCreateTabDescriptionPage.getNumberOfImages(page);
-        expect(numImages).to.be.equals(1);
+        await boProductsPage.reloadPage(page);
 
         productImageInformation = await boProductsCreateTabDescriptionPage.getProductImageInformation(page, 1);
       });
@@ -262,8 +314,11 @@ describe('API : POST /product/{productId}/image', async () => {
       it('should check the JSON Response : `legends`', async function () {
         await testContext.addContextItem(this, 'testIdentifier', 'checkResponseLegends', baseContext);
 
-        expect(productImageInformation.caption.en).to.equal(jsonResponse.legends[dataLanguages.english.id]);
-        expect(productImageInformation.caption.fr).to.equal(jsonResponse.legends[dataLanguages.french.id]);
+        expect(productImageInformation.caption.en).to.equal(jsonResponse.legends[dataLanguages.english.locale]);
+        expect(productImageInformation.caption.en).to.equal(productCaptionUpdatedEN);
+
+        expect(productImageInformation.caption.fr).to.equal(jsonResponse.legends[dataLanguages.french.locale]);
+        expect(productImageInformation.caption.fr).to.equal(productCaptionUpdatedFR);
       });
 
       it('should check the JSON Response : `cover`', async function () {
